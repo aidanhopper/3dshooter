@@ -13,11 +13,8 @@ int main(int argc, char *argv[]) {
     }
 
     clear(0x0);
-
-    for (int i = 0; i < WINDOW_WIDTH; i++) {
+    for (int i = 0; i < WINDOW_WIDTH; i++)
       pixel(i, i % WINDOW_HEIGHT, 0xF00FF);
-    }
-
     render();
   }
 

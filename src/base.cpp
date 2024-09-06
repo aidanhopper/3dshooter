@@ -53,3 +53,7 @@ void render() {
   SDL_RenderPresent(renderer);
   SDL_DestroyTexture(texture);
 }
+
+void line(int x0, int y0, int x1, int y1, int color) {
+  double slope = (y1 - y0) / (x1 - x0);
+}
