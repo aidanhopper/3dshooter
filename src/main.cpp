@@ -13,8 +13,9 @@ int main(int argc, char *argv[]) {
     }
 
     clear(0x0);
-    for (int i = 0; i < WINDOW_WIDTH; i++)
-      pixel(i, i % WINDOW_HEIGHT, 0xF00FF);
+
+    ptriangle(50, 50, 100, 100, 450, 10, 0xFFFFFF);
+
     render();
   }
 

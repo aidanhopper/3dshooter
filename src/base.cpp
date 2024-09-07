@@ -54,6 +54,38 @@ void render() {
   SDL_DestroyTexture(texture);
 }
 
-void line(int x0, int y0, int x1, int y1, int color) {
-  double slope = (y1 - y0) / (x1 - x0);
+// primitive line drawing algorithm
+void pline(int x0, int y0, int x1, int y1, int color) {
+
+  double dx = std::abs(x1 - x0);
+  double sx = x0 < x1 ? 1 : -1;
+  double dy = -std::abs(y1 - y0);
+  double sy = y0 < y1 ? 1 : -1;
+  double error = dx + dy;
+  
+  while (true) {
+    pixel(x0, y0, color);
+    if (x0 == x1 && y0 == y1)
+      break;
+    double e2 = 2 * error;
+    if (e2 >= dy) {
+      error = error + dy;
+      x0 = x0 + sx;
+    }
+    if (e2 <= dx) {
+      error = error + dx;
+      y0 = y0 + sy;
+    }
+  }
+
+}
+
+// primitive triangle drawing algorithm
+void ptriangle(int x0, int y0, int x1, int y1, int x2, int y2, int color, bool fill = true) {
+  pline(x0, y0, x1, y1, color);
+  pline(x1, y1, x2, y2, color);
+  pline(x0, y0, x2, y2, color);
+
+  //if ()
+
 }
