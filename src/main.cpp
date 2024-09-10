@@ -18,23 +18,44 @@ Matrix createProjectionMatrix() {
   );
 }
 
+void trihelper(v3 p0, v3 p1, v3 p2, Matrix transformation) {
+  Triangle::draw(
+    (transformation * p0.tov4()).perdiv(), 
+    (transformation * p1.tov4()).perdiv(),
+    (transformation * p2.tov4()).perdiv(),
+    0xFFFFFF
+  );
+}
+
+void drawCube() {
+
+  v3 p00 = v3(0, 0, -5);
+  v3 p10 = v3(1, 0, -5);
+  v3 p20 = v3(1, 1, -5);
+  v3 p01 = v3(0, 0, -5);
+  v3 p11 = v3(0, 1, -5);
+  v3 p21 = v3(1, 1, -5);
+  v3 p02 = v3(0, 0, -5);
+  v3 p12 = v3(0, 1, -5);
+  v3 p22 = v3(0, 1, -6);
+  v3 p03 = v3(0, 0, -5);
+  v3 p13 = v3(0, 0, -6);
+  v3 p23 = v3(0, 1, -6);
+
+  Matrix projectionMatrix = createProjectionMatrix();  
+
+  trihelper(p00, p10, p20, projectionMatrix);
+  trihelper(p01, p11, p21, projectionMatrix);
+  trihelper(p02, p12, p22, projectionMatrix);
+  trihelper(p03, p13, p23, projectionMatrix);
+
+}
+
 int main(int argc, char *argv[]) {
   if (init() != 0)
     return 1;
 
   Matrix projectionMatrix = createProjectionMatrix();  
-
-  v3 p0 = v3(-1, 0, -5);
-  v3 p1 = v3(-4, 1, -5);
-  v3 p2 = v3(0, 0, -5);
-
-  v2 p0projected = (projectionMatrix * p0.tov4()).perdiv();
-  v2 p1projected = (projectionMatrix * p1.tov4()).perdiv();
-  v2 p2projected = (projectionMatrix * p2.tov4()).perdiv();
-
-  std::cout << projectionMatrix << std::endl;
-  std::cout << projectionMatrix * p0.tov4() << std::endl;
-  std::cout << projectionMatrix * p1.tov4() << std::endl;
 
   SDL_Event event;
   while (true) {
@@ -46,7 +67,7 @@ int main(int argc, char *argv[]) {
 
     clear(0x222222);
 
-    Triangle::draw(p0projected, p1projected, p2projected, 0xFFFFFF);
+    drawCube();
 
     render();
   }

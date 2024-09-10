@@ -100,13 +100,5 @@ v4 operator* (const Matrix &m, const v4 &v) {
     for (int j = 0; j < 4; j++)
       newVector[i] += oldVector[j] * m.m[i][j];
 
-  std::cout << "old ";
-  for (int i = 0; i < 4; i++)
-    std::cout << oldVector[i] << " ";
-  std::cout << std::endl << "new ";
-  for (int i = 0; i < 4; i++)
-    std::cout << newVector[i] << " ";
-
-  std::cout << std::endl;
   return v4(newVector[0], newVector[1], newVector[2], newVector[3]);
 }
