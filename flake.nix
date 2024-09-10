@@ -40,7 +40,15 @@
           src = ./.;
           buildInputs = with pkgs; [ SDL2 ];
           buildPhase = ''
-            g++ -o shooter ./src/main.cpp ./src/base.cpp `sdl2-config --cflags --libs`
+            g++ -o shooter \
+                ./src/main.cpp \
+                ./src/base.cpp \
+                ./src/triangle.cpp \
+                ./src/matrix.cpp \
+                ./src/v2.cpp \
+                ./src/v3.cpp \
+                ./src/v4.cpp \
+                `sdl2-config --cflags --libs`
           '';
           installPhase = ''
             mkdir -p $out/bin
