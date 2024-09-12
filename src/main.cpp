@@ -18,13 +18,16 @@ Matrix createProjectionMatrix() {
   );
 }
 
-void trihelper(v3 p0, v3 p1, v3 p2, Matrix transformation) {
-  Triangle::draw(
-    (transformation * p0.tov4()).perdiv(), 
-    (transformation * p1.tov4()).perdiv(),
-    (transformation * p2.tov4()).perdiv(),
-    0xFFFFFF
-  );
+Matrix createXRotMatrix(double theta) {
+
+}
+
+Matrix createYRotMatrix(double theta) {
+
+}
+
+double createTransformationMatrix(v3 v) {
+
 }
 
 void drawCube() {
@@ -32,22 +35,35 @@ void drawCube() {
   v3 p00 = v3(0, 0, -5);
   v3 p10 = v3(1, 0, -5);
   v3 p20 = v3(1, 1, -5);
+
   v3 p01 = v3(0, 0, -5);
   v3 p11 = v3(0, 1, -5);
   v3 p21 = v3(1, 1, -5);
+
   v3 p02 = v3(0, 0, -5);
   v3 p12 = v3(0, 1, -5);
   v3 p22 = v3(0, 1, -6);
+
   v3 p03 = v3(0, 0, -5);
   v3 p13 = v3(0, 0, -6);
   v3 p23 = v3(0, 1, -6);
 
+  v3 p04 = v3(0, 0, -6);
+  v3 p14 = v3(1, 0, -6);
+  v3 p24 = v3(1, 1, -6);
+
+  v3 p05 = v3(0, 0, -6);
+  v3 p15 = v3(0, 1, -6);
+  v3 p25 = v3(1, 1, -6);
+
   Matrix projectionMatrix = createProjectionMatrix();  
 
-  trihelper(p00, p10, p20, projectionMatrix);
-  trihelper(p01, p11, p21, projectionMatrix);
-  trihelper(p02, p12, p22, projectionMatrix);
-  trihelper(p03, p13, p23, projectionMatrix);
+  Triangle::draw(p00, p10, p20, 0xFFFFFF, projectionMatrix);
+  Triangle::draw(p01, p11, p21, 0xFFFFFF, projectionMatrix);
+  Triangle::draw(p02, p12, p22, 0xFFFFFF, projectionMatrix);
+  Triangle::draw(p03, p13, p23, 0xFFFFFF, projectionMatrix);
+  Triangle::draw(p04, p14, p24, 0xFFFFFF, projectionMatrix);
+  Triangle::draw(p05, p15, p25, 0xFFFFFF, projectionMatrix);
 
 }
 
