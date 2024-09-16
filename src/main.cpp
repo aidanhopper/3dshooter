@@ -13,65 +13,109 @@ Matrix createProjectionMatrix() {
   return Matrix(
     1/(aspectRatio*std::tan(fov/2)), 0, 0, 0,
     0, tan(fov/2), 0, 0,
-    0, 0, -(far+near)/(far-near), -2*far*near/(far-near),
+    0, 0, -(far+near)/(near-far), -2*far*near/(near-far),
     0, 0, -1, 0
   );
 }
 
-Matrix createXRotMatrix(double theta) {
-
-}
+// Matrix createXRotMatrix(double theta) {
+// }
 
 Matrix createYRotMatrix(double theta) {
-
+  return Matrix(
+    std::cos(theta), 0, std::sin(theta), 0,
+    0, 1, 0, 0,
+    -std::sin(theta), 0, std::cos(theta), 0,
+    0, 0, 0, 1
+  );
 }
 
-double createTransformationMatrix(v3 v) {
-
+Matrix createTranslationMatrix(v3 v) {
+  return Matrix(
+    1, 0, 0, v.x,
+    0, 1, 0, v.y,
+    0, 0, 1, v.z,
+    0, 0, 0, 1
+  );
 }
 
-void drawCube() {
+// BUG
+// The matrix * matrix multiplication
+// is producing incorrect outputs
+void drawPoint(v3 p0, v3 p1, v3 p2, v3 pos, double theta) {
+  Matrix project = createProjectionMatrix();  
+  Matrix rot = createYRotMatrix(theta);
+  Matrix translate = createTranslationMatrix(v3(10, 10, -10));
 
-  v3 p00 = v3(0, 0, -5);
-  v3 p10 = v3(1, 0, -5);
-  v3 p20 = v3(1, 1, -5);
+  v4 p0transformed = translate * project * p0.tov4();
+  v4 p1transformed = translate * project * p1.tov4();
+  v4 p2transformed = translate * project * p2.tov4();
 
-  v3 p01 = v3(0, 0, -5);
-  v3 p11 = v3(0, 1, -5);
-  v3 p21 = v3(1, 1, -5);
+  Matrix correct = Matrix(
+    0.617, 0, -10, 0,
+    0, 1.619, -10, 0,
+    0, 0, 8.98, -2.02,
+    0, 0, -1, 0
+  );
 
-  v3 p02 = v3(0, 0, -5);
-  v3 p12 = v3(0, 1, -5);
-  v3 p22 = v3(0, 1, -6);
+  //std:: cout << correct * v4(1, 2, 1, 1) << std::endl;
 
-  v3 p03 = v3(0, 0, -5);
-  v3 p13 = v3(0, 0, -6);
-  v3 p23 = v3(0, 1, -6);
-
-  v3 p04 = v3(0, 0, -6);
-  v3 p14 = v3(1, 0, -6);
-  v3 p24 = v3(1, 1, -6);
-
-  v3 p05 = v3(0, 0, -6);
-  v3 p15 = v3(0, 1, -6);
-  v3 p25 = v3(1, 1, -6);
-
-  Matrix projectionMatrix = createProjectionMatrix();  
-
-  Triangle::draw(p00, p10, p20, 0xFFFFFF, projectionMatrix);
-  Triangle::draw(p01, p11, p21, 0xFFFFFF, projectionMatrix);
-  Triangle::draw(p02, p12, p22, 0xFFFFFF, projectionMatrix);
-  Triangle::draw(p03, p13, p23, 0xFFFFFF, projectionMatrix);
-  Triangle::draw(p04, p14, p24, 0xFFFFFF, projectionMatrix);
-  Triangle::draw(p05, p15, p25, 0xFFFFFF, projectionMatrix);
-
+  //std::cout << project << std::endl;
+  //std::cout << translate << std::endl;
+  std::cout << translate * project << std::endl;
+  std::cout << translate * project * v4(1, 1, 1, 1)<< std::endl;
+  
+  //Triangle::draw(
+  //  (translate * project * p0.tov4()).perdiv(),
+  //  (translate * project * p1.tov4()).perdiv(),
+  //  (translate * project * p2.tov4()).perdiv(),
+  //  0xFFFFFF
+  //);
 }
+
+void drawCube(double theta) {
+
+  v3 p00 = v3(0, 0, -0);
+  v3 p10 = v3(1, 0, -0);
+  v3 p20 = v3(1, 1, 1);
+
+  v3 p01 = v3(0, 0, -0);
+  v3 p11 = v3(0, 1, -0);
+  v3 p21 = v3(1, 1, -0);
+
+  v3 p02 = v3(0, 0, -0);
+  v3 p12 = v3(0, 1, -0);
+  v3 p22 = v3(0, 1, -1);
+
+  v3 p03 = v3(0, 0, -0);
+  v3 p13 = v3(0, 0, -1);
+  v3 p23 = v3(0, 1, -1);
+
+  v3 p04 = v3(0, 0, -1);
+  v3 p14 = v3(1, 0, -1);
+  v3 p24 = v3(1, 1, -1);
+
+  v3 p05 = v3(0, 0, -1);
+  v3 p15 = v3(0, 1, -1);
+  v3 p25 = v3(1, 1, -1);
+
+  v3 pos = v3(10, 10, -90);
+
+  drawPoint(p00, p10, p20, pos, theta);
+  //drawPoint(p01, p11, p21, pos, theta);
+  //drawPoint(p02, p12, p22, pos, theta);
+  //drawPoint(p03, p13, p23, pos, theta);
+  //drawPoint(p04, p14, p24, pos, theta);
+  //drawPoint(p05, p15, p25, pos, theta);
+}
+
+
 
 int main(int argc, char *argv[]) {
   if (init() != 0)
     return 1;
 
-  Matrix projectionMatrix = createProjectionMatrix();  
+  double theta = 0;
 
   SDL_Event event;
   while (true) {
@@ -83,9 +127,12 @@ int main(int argc, char *argv[]) {
 
     clear(0x222222);
 
-    drawCube();
+    drawCube(theta);
 
     render();
+
+    theta += 0.001;
+
   }
 
   cleanup();

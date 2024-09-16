@@ -40,3 +40,11 @@ double dot(v3 v1, v3 v2) {
 v2 v3::perdiv() {
   return v2(this->x/this->z, this->y/this->z);
 }
+
+v3 operator* (const v3 &v, const double &s) {
+  return v3(v.x * s, v.y * s, v.z * s);
+}
+
+v3 operator* (const double &s, const v3 &v) {
+  return v3(v.x * s, v.y * s, v.z * s);
+}

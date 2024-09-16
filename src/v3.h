@@ -19,6 +19,8 @@ public:
   v4 tov4();
   v2 perdiv(); // perspective divide
   friend std::ostream& operator<< (std::ostream &out, const v3 &v);
+  friend v3 operator* (const v3 &v, const double &s);
+  friend v3 operator* (const double &s, const v3 &v);
 };
 
 v3 cross(v3 v1, v3 v2);
