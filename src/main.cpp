@@ -6,7 +6,7 @@
 
 const double PI = 3.14159;
 
-const double aspectRatio = WINDOW_WIDTH/WINDOW_HEIGHT;
+const double aspectRatio = (double) WINDOW_WIDTH/WINDOW_HEIGHT;
 const double fov = 90; // in degrees
 const double near = 1;
 const double far = 100;
@@ -54,15 +54,7 @@ void drawPoint(v3 p0, v3 p1, v3 p2, v3 pos, double theta) {
   v4 p1transformed = translate * project * p1.tov4();
   v4 p2transformed = translate * project * p2.tov4();
 
-  Matrix correct = Matrix(
-    0.617, 0, -10, 0,
-    0, 1.619, -10, 0,
-    0, 0, 8.98, -2.02,
-    0, 0, -1, 0
-  );
-
-  std::cout << project << std::endl;
-  //std:: cout << correct * v4(0, 0, 0, 1) << std::endl;
+  std:: cout << project * v4(0.5, 0.5, 0.5, 1) << std::endl;
 
   //Triangle::draw(
   //  (translate * project * p0.tov4()).perdiv(),
@@ -74,8 +66,7 @@ void drawPoint(v3 p0, v3 p1, v3 p2, v3 pos, double theta) {
 
 void drawCube(double theta) {
 
-  v3 p00 = v3(0, 0, -0);
-  v3 p10 = v3(1, 0, -0);
+  v3 p00 = v3(0, 0, -0); v3 p10 = v3(1, 0, -0);
   v3 p20 = v3(1, 1, 1);
 
   v3 p01 = v3(0, 0, -0);
@@ -111,8 +102,8 @@ void drawCube(double theta) {
 
 
 int main(int argc, char *argv[]) {
-  if (init() != 0)
-    return 1;
+  //if (init() != 0)
+  //  return 1;
 
   double theta = 0;
 
@@ -124,16 +115,16 @@ int main(int argc, char *argv[]) {
       }
     }
 
-    clear(0x222222);
+    //clear(0x222222);
 
     drawCube(theta);
 
-    render();
+    //render();
 
     theta += 0.001;
 
   }
 
-  cleanup();
+  //cleanup();
 }
 
