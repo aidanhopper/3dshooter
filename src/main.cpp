@@ -4,16 +4,19 @@
 #include "v3.h"
 #include "v4.h"
 
+const double PI = 3.14159;
+
 const double aspectRatio = WINDOW_WIDTH/WINDOW_HEIGHT;
-const double fov = 90;
+const double fov = 90; // in degrees
 const double near = 1;
 const double far = 100;
 
 Matrix createProjectionMatrix() {
+  float scale = 1 / std::tan(fov * 0.5 * PI/180);
   return Matrix(
-    1/(aspectRatio*std::tan(fov/2)), 0, 0, 0,
-    0, tan(fov/2), 0, 0,
-    0, 0, -(far+near)/(near-far), -2*far*near/(near-far),
+    (1/aspectRatio)*scale, 0, 0, 0,
+    0, scale, 0, 0,
+    0, 0, -(far+near)/(far-near), -2*far*near/(far-near),
     0, 0, -1, 0
   );
 }
@@ -58,13 +61,9 @@ void drawPoint(v3 p0, v3 p1, v3 p2, v3 pos, double theta) {
     0, 0, -1, 0
   );
 
-  //std:: cout << correct * v4(1, 2, 1, 1) << std::endl;
+  std::cout << project << std::endl;
+  //std:: cout << correct * v4(0, 0, 0, 1) << std::endl;
 
-  //std::cout << project << std::endl;
-  //std::cout << translate << std::endl;
-  std::cout << translate * project << std::endl;
-  std::cout << translate * project * v4(1, 1, 1, 1)<< std::endl;
-  
   //Triangle::draw(
   //  (translate * project * p0.tov4()).perdiv(),
   //  (translate * project * p1.tov4()).perdiv(),
