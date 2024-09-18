@@ -18,11 +18,11 @@ public:
   v3 norm();
   v4 tov4();
   v2 tov2();
+  double dot(v3 v);
+  v3 cross(v3 v1);
   friend std::ostream& operator<< (std::ostream &out, const v3 &v);
   friend v3 operator* (const v3 &v, const double &s);
   friend v3 operator* (const double &s, const v3 &v);
+  friend v3 operator+ (const v3 &v1, const v3 &v2);
+  friend v3 operator- (const v3 &v1, const v3 &v2);
 };
-
-v3 cross(v3 v1, v3 v2);
-
-double dot(v3 v1, v3 v2);

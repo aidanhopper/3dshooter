@@ -42,71 +42,41 @@ Matrix createTranslationMatrix(v3 v) {
   );
 }
 
-void drawFace(v3 p0, v3 p1, v3 p2, v3 p3, v3 pos, double theta) {
-  Matrix project = createProjectionMatrix();  
-  Matrix rot = createYRotMatrix(theta);
-  Matrix translate = createTranslationMatrix(pos);
-
-  v2 p0transformed = (project * translate * rot * p0.tov4()).perspectiveDivide().tov2();
-  v2 p1transformed = (project * translate * rot * p1.tov4()).perspectiveDivide().tov2();
-  v2 p2transformed = (project * translate * rot * p2.tov4()).perspectiveDivide().tov2();
-  v2 p3transformed = (project * translate * rot * p3.tov4()).perspectiveDivide().tov2();
-
-  Triangle::draw(
-    p0transformed,
-    p1transformed,
-    p2transformed,
-    0xFFFFFF
-  );
-
-  Triangle::draw(
-    p1transformed,
-    p2transformed,
-    p3transformed,
-    0xFFFFFF
-  );
-}
-
 void drawCube(double theta) {
 
-  v3 face10 = v3(1, 0, -0);
-  v3 face11 = v3(0, 0, -1);
-  v3 face12 = v3(0, 1, -1);
-  v3 face13 = v3(0, 1, -0);
-
-  v3 face20 = v3(0, 0, -0);
-  v3 face21 = v3(1, 0, -0);
-  v3 face22 = v3(1, 1, -0);
-  v3 face23 = v3(0, 1, -0);
-
-  v3 face30 = v3(1, 0, -0);
-  v3 face31 = v3(1, 0, -1);
-  v3 face32 = v3(1, 1, -1);
-  v3 face33 = v3(1, 1, -0);
-
-  v3 face40 = v3(0, 0, -1);
-  v3 face41 = v3(1, 0, -1);
-  v3 face42 = v3(1, 1, -1);
-  v3 face43 = v3(0, 1, -1);
-
-  v3 face50 = v3(0, 0, -0);
-  v3 face51 = v3(1, 0, -0);
-  v3 face52 = v3(1, 0, -1);
-  v3 face53 = v3(0, 0, -1);
-
-  v3 face60 = v3(0, 1, -0);
-  v3 face61 = v3(1, 1, -0);
-  v3 face62 = v3(1, 1, -1);
-  v3 face63 = v3(0, 1, -1);
+  v3 p0 = v3(0, 0, 0);
+  v3 p1 = v3(1, 0, 0);
+  v3 p2 = v3(0, 1, 0);
 
   v3 pos = v3(-0.5, -0.5, -3);
 
-  drawFace(face10, face11, face12, face13, pos, theta);
-  drawFace(face20, face21, face22, face23, pos, theta);
-  drawFace(face30, face31, face32, face33, pos, theta);
-  drawFace(face40, face41, face42, face43, pos, theta);
-  drawFace(face50, face51, face52, face53, pos, theta);
-  drawFace(face60, face61, face62, face63, pos, theta);
+  Matrix project = createProjectionMatrix();
+  Matrix rot = createYRotMatrix(theta);
+  Matrix translation = createTranslationMatrix(pos);
+
+  v4 p0cam = translation * rot * p0.tov4();
+  v4 p1cam = translation * rot * p1.tov4();
+  v4 p2cam = translation * rot * p2.tov4();
+
+  v3 p0screen = (project * p0cam).perspectiveDivide();
+  v3 p1screen = (project * p1cam).perspectiveDivide();
+  v3 p2screen = (project * p2cam).perspectiveDivide();
+
+  v3 normal = (p1screen - p0screen).cross(p2screen- p0screen);
+
+  double dir = normal.dot(v3(0, 0, -1));
+
+  if (dir <= 0) {
+    int color = 0xFFFFFF - std::abs((int)(dir*100000));
+    std::cout << std::hex << color << std::endl;
+    Triangle::draw(
+      p0screen.tov2(),
+      p1screen.tov2(),
+      p2screen.tov2(),
+      color
+    );
+  }
+
 }
 
 int main(int argc, char *argv[]) {

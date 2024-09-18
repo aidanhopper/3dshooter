@@ -12,10 +12,8 @@ v3::v3(double x, double y, double z) {
   this->z = z;
 }
 
-v3 v3::norm() {
-  double d = std::sqrt(
-    this->x*this->x + this->y*this->y + this->z*this->z
-  );
+v3 v3::norm() { 
+  double d = std::sqrt( this->x*this->x + this->y*this->y + this->z*this->z);
   return v3(this->x/d, this->y/d, this->z/d);
 }
 
@@ -32,12 +30,17 @@ std::ostream& operator<< (std::ostream &out, const v3 &v) {
   return out;
 }
 
-v3 cross(v3 v1, v3 v2) {
-  return v1;
+double v3::dot(v3 v) {
+  return this->x*v.x + this->y*v.y + this->z*v.z;
 }
 
-double dot(v3 v1, v3 v2) {
-  return v1.x*v2.x + v1.y*v2.y + v1.z*v2.z;
+v3 v3::cross(v3 v2) {
+  v3 v1 = *this;
+  return v3(
+    v1.y*v2.z - v1.z*v2.y,
+    v1.z*v2.x - v1.x*v2.z,
+    v1.x*v2.y - v1.y*v2.x
+  );
 }
 
 v3 operator* (const v3 &v, const double &s) {
@@ -46,4 +49,12 @@ v3 operator* (const v3 &v, const double &s) {
 
 v3 operator* (const double &s, const v3 &v) {
   return v3(v.x * s, v.y * s, v.z * s);
+}
+
+v3 operator- (const v3 &v1, const v3 &v2) {
+  return v3(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z);
+}
+
+v3 operator+ (const v3 &v1, const v3 &v2) {
+  return v3(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z);
 }
