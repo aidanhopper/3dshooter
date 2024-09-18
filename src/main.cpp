@@ -3,6 +3,7 @@
 #include "matrix.h"
 #include "v3.h"
 #include "v4.h"
+#include "hsl.h"
 
 const double PI = 3.14159;
 
@@ -64,16 +65,16 @@ void drawCube(double theta) {
 
   v3 normal = (p1screen - p0screen).cross(p2screen- p0screen);
 
-  double dir = normal.dot(v3(0, 0, -1));
+  double luminence = -normal.dot(v3(0, 0, -1));
 
-  if (dir <= 0) {
-    int color = 0xFFFFFF - std::abs((int)(dir*100000));
-    std::cout << std::hex << color << std::endl;
+  if (luminence >= 0) {
+    HSL color = HSL(1.0,1.0,1.0);
+    std::cout << color << std::endl;
     Triangle::draw(
       p0screen.tov2(),
       p1screen.tov2(),
       p2screen.tov2(),
-      color
+      color.toHex()
     );
   }
 
