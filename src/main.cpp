@@ -109,8 +109,6 @@ void drawCube(double theta) {
   drawFace(face60, face61, face62, face63, pos, theta);
 }
 
-
-
 int main(int argc, char *argv[]) {
   if (init() != 0)
     return 1;
