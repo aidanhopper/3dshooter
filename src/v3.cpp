@@ -23,11 +23,14 @@ v4 v3::tov4() {
   return v4(this->x, this->y, this->z, 1);
 }
 
+v2 v3::tov2() {
+  return v2(this->x, this->y);
+}
+
 std::ostream& operator<< (std::ostream &out, const v3 &v) {
   out << "[ " << v.x << " " << v.y << " " << v.z << " ]";
   return out;
 }
-
 
 v3 cross(v3 v1, v3 v2) {
   return v1;
@@ -35,10 +38,6 @@ v3 cross(v3 v1, v3 v2) {
 
 double dot(v3 v1, v3 v2) {
   return v1.x*v2.x + v1.y*v2.y + v1.z*v2.z;
-}
-
-v2 v3::perdiv() {
-  return v2(this->x/this->z, this->y/this->z);
 }
 
 v3 operator* (const v3 &v, const double &s) {

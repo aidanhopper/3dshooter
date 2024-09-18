@@ -17,7 +17,7 @@ public:
   v3(double x, double y, double z);
   v3 norm();
   v4 tov4();
-  v2 perdiv(); // perspective divide
+  v2 tov2();
   friend std::ostream& operator<< (std::ostream &out, const v3 &v);
   friend v3 operator* (const v3 &v, const double &s);
   friend v3 operator* (const double &s, const v3 &v);

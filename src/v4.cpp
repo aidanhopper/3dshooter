@@ -18,8 +18,6 @@ std::ostream& operator<< (std::ostream &out, const v4 &v) {
   return out;
 }
 
-v2 v4::perdiv() {
-  v2 out = v2(this->x/this->w, this->y/this->w);
-  //std::cout << *this << std::endl;
-  return out;
+v3 v4::perspectiveDivide() {
+  return v3(this->x/this->w, this->y/this->w, this->z/this->w);
 }

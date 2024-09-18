@@ -42,70 +42,80 @@ Matrix createTranslationMatrix(v3 v) {
   );
 }
 
-// BUG
-// The matrix * matrix multiplication
-// is producing incorrect outputs
-void drawPoint(v3 p0, v3 p1, v3 p2, v3 pos, double theta) {
+void drawFace(v3 p0, v3 p1, v3 p2, v3 p3, v3 pos, double theta) {
   Matrix project = createProjectionMatrix();  
   Matrix rot = createYRotMatrix(theta);
-  Matrix translate = createTranslationMatrix(v3(10, 10, -10));
+  Matrix translate = createTranslationMatrix(pos);
 
-  v4 p0transformed = translate * project * p0.tov4();
-  v4 p1transformed = translate * project * p1.tov4();
-  v4 p2transformed = translate * project * p2.tov4();
+  v2 p0transformed = (project * translate * rot * p0.tov4()).perspectiveDivide().tov2();
+  v2 p1transformed = (project * translate * rot * p1.tov4()).perspectiveDivide().tov2();
+  v2 p2transformed = (project * translate * rot * p2.tov4()).perspectiveDivide().tov2();
+  v2 p3transformed = (project * translate * rot * p3.tov4()).perspectiveDivide().tov2();
 
-  std:: cout << project * v4(0.5, 0.5, 0.5, 1) << std::endl;
+  Triangle::draw(
+    p0transformed,
+    p1transformed,
+    p2transformed,
+    0xFFFFFF
+  );
 
-  //Triangle::draw(
-  //  (translate * project * p0.tov4()).perdiv(),
-  //  (translate * project * p1.tov4()).perdiv(),
-  //  (translate * project * p2.tov4()).perdiv(),
-  //  0xFFFFFF
-  //);
+  Triangle::draw(
+    p1transformed,
+    p2transformed,
+    p3transformed,
+    0xFFFFFF
+  );
 }
 
 void drawCube(double theta) {
 
-  v3 p00 = v3(0, 0, -0); v3 p10 = v3(1, 0, -0);
-  v3 p20 = v3(1, 1, 1);
+  v3 face10 = v3(1, 0, -0);
+  v3 face11 = v3(0, 0, -1);
+  v3 face12 = v3(0, 1, -1);
+  v3 face13 = v3(0, 1, -0);
 
-  v3 p01 = v3(0, 0, -0);
-  v3 p11 = v3(0, 1, -0);
-  v3 p21 = v3(1, 1, -0);
+  v3 face20 = v3(0, 0, -0);
+  v3 face21 = v3(1, 0, -0);
+  v3 face22 = v3(1, 1, -0);
+  v3 face23 = v3(0, 1, -0);
 
-  v3 p02 = v3(0, 0, -0);
-  v3 p12 = v3(0, 1, -0);
-  v3 p22 = v3(0, 1, -1);
+  v3 face30 = v3(1, 0, -0);
+  v3 face31 = v3(1, 0, -1);
+  v3 face32 = v3(1, 1, -1);
+  v3 face33 = v3(1, 1, -0);
 
-  v3 p03 = v3(0, 0, -0);
-  v3 p13 = v3(0, 0, -1);
-  v3 p23 = v3(0, 1, -1);
+  v3 face40 = v3(0, 0, -1);
+  v3 face41 = v3(1, 0, -1);
+  v3 face42 = v3(1, 1, -1);
+  v3 face43 = v3(0, 1, -1);
 
-  v3 p04 = v3(0, 0, -1);
-  v3 p14 = v3(1, 0, -1);
-  v3 p24 = v3(1, 1, -1);
+  v3 face50 = v3(0, 0, -0);
+  v3 face51 = v3(1, 0, -0);
+  v3 face52 = v3(1, 0, -1);
+  v3 face53 = v3(0, 0, -1);
 
-  v3 p05 = v3(0, 0, -1);
-  v3 p15 = v3(0, 1, -1);
-  v3 p25 = v3(1, 1, -1);
+  v3 face60 = v3(0, 1, -0);
+  v3 face61 = v3(1, 1, -0);
+  v3 face62 = v3(1, 1, -1);
+  v3 face63 = v3(0, 1, -1);
 
-  v3 pos = v3(10, 10, -90);
+  v3 pos = v3(-0.5, -0.5, -3);
 
-  drawPoint(p00, p10, p20, pos, theta);
-  //drawPoint(p01, p11, p21, pos, theta);
-  //drawPoint(p02, p12, p22, pos, theta);
-  //drawPoint(p03, p13, p23, pos, theta);
-  //drawPoint(p04, p14, p24, pos, theta);
-  //drawPoint(p05, p15, p25, pos, theta);
+  drawFace(face10, face11, face12, face13, pos, theta);
+  drawFace(face20, face21, face22, face23, pos, theta);
+  drawFace(face30, face31, face32, face33, pos, theta);
+  drawFace(face40, face41, face42, face43, pos, theta);
+  drawFace(face50, face51, face52, face53, pos, theta);
+  drawFace(face60, face61, face62, face63, pos, theta);
 }
 
 
 
 int main(int argc, char *argv[]) {
-  //if (init() != 0)
-  //  return 1;
+  if (init() != 0)
+    return 1;
 
-  double theta = 0;
+  double theta = 0.001;
 
   SDL_Event event;
   while (true) {
@@ -115,16 +125,16 @@ int main(int argc, char *argv[]) {
       }
     }
 
-    //clear(0x222222);
+    clear(0x222222);
 
     drawCube(theta);
 
-    //render();
+    render();
 
     theta += 0.001;
 
   }
 
-  //cleanup();
+  cleanup();
 }
 
