@@ -25,7 +25,7 @@ Matrix createProjectionMatrix() {
 // Matrix createXRotMatrix(double theta) {
 // }
 
-Matrix createYRotMatrix(double theta) {
+Matrix createYRotMatrix(double theta) { 
   return Matrix(
     std::cos(theta), 0, std::sin(theta), 0,
     0, 1, 0, 0,
@@ -49,7 +49,7 @@ void drawCube(double theta) {
   v3 p1 = v3(1, 0, 0);
   v3 p2 = v3(0, 1, 0);
 
-  v3 pos = v3(-0.5, -0.5, -1);
+  v3 pos = v3(0, 0, -1.5);
 
   Matrix project = createProjectionMatrix();
   Matrix rot = createYRotMatrix(theta);
@@ -69,7 +69,7 @@ void drawCube(double theta) {
 
   if (luminence >= 0) {
     std::cout << luminence << std::endl;
-    HSL color = HSL(0.8,0,luminence);
+    HSL color = HSL(0.8,0, std::max(luminence, 0.3));
     //std::cout << color << std::endl;
     //std::cout << color.toHex() << std::endl;
     Triangle::draw(
