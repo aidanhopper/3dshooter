@@ -49,7 +49,7 @@ void drawCube(double theta) {
   v3 p1 = v3(1, 0, 0);
   v3 p2 = v3(0, 1, 0);
 
-  v3 pos = v3(-0.5, -0.5, -3);
+  v3 pos = v3(-0.5, -0.5, -1);
 
   Matrix project = createProjectionMatrix();
   Matrix rot = createYRotMatrix(theta);
@@ -68,8 +68,10 @@ void drawCube(double theta) {
   double luminence = -normal.dot(v3(0, 0, -1));
 
   if (luminence >= 0) {
-    HSL color = HSL(1.0,1.0,1.0);
-    std::cout << color << std::endl;
+    std::cout << luminence << std::endl;
+    HSL color = HSL(0.8,0,luminence);
+    //std::cout << color << std::endl;
+    //std::cout << color.toHex() << std::endl;
     Triangle::draw(
       p0screen.tov2(),
       p1screen.tov2(),

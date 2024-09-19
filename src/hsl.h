@@ -1,8 +1,11 @@
 #pragma once
 
 #include <iostream>
+#include <cmath>
 
 class HSL {
+private:
+  double hueToRGB(double p, double q, double t);
 public:
   double hue;
   double saturation;
