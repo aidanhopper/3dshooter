@@ -11,6 +11,7 @@ public:
   double saturation;
   double luminence;
   HSL(int color);
+  HSL();
   HSL(double hue, double saturation, double luminence);
   int toHex();
   friend std::ostream& operator<< (std::ostream &out, const HSL &color);

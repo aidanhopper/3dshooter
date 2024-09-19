@@ -49,6 +49,7 @@
                 ./src/v3.cpp \
                 ./src/v4.cpp \
                 ./src/hsl.cpp \
+                ./src/mesh.cpp \
                 `sdl2-config --cflags --libs`
           '';
           installPhase = ''

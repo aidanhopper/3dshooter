@@ -5,6 +5,9 @@ HSL::HSL(int color) {
   std::cout << color << std::endl;
 }
 
+HSL::HSL() {
+}
+
 HSL::HSL(double hue, double saturation, double luminence) {
   this->hue = hue;
   this->saturation = saturation;

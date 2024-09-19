@@ -4,6 +4,7 @@
 #include "v3.h"
 #include "v4.h"
 #include "hsl.h"
+#include "mesh.h"
 
 const double PI = 3.14159;
 
@@ -43,14 +44,13 @@ Matrix createTranslationMatrix(v3 v) {
   );
 }
 
-void drawCube(double theta) {
+void drawRotatingTriangle(double theta) {
 
   v3 p0 = v3(0, 0, 0);
   v3 p1 = v3(1, 0, 0);
   v3 p2 = v3(0, 1, 0);
 
-  v3 pos = v3(0, 0, -1.5);
-
+  v3 pos = v3(0.5, 0.5, -5);
   Matrix project = createProjectionMatrix();
   Matrix rot = createYRotMatrix(theta);
   Matrix translation = createTranslationMatrix(pos);
@@ -63,15 +63,13 @@ void drawCube(double theta) {
   v3 p1screen = (project * p1cam).perspectiveDivide();
   v3 p2screen = (project * p2cam).perspectiveDivide();
 
-  v3 normal = (p1screen - p0screen).cross(p2screen- p0screen);
+  v3 normal = (p1screen - p0screen).cross(p2screen - p0screen);
 
-  double luminence = -normal.dot(v3(0, 0, -1));
+  double dir = normal.dot(v3(0, 0, -1));
 
-  if (luminence >= 0) {
-    std::cout << luminence << std::endl;
-    HSL color = HSL(0.8,0, std::max(luminence, 0.3));
-    //std::cout << color << std::endl;
-    //std::cout << color.toHex() << std::endl;
+  if (dir <= 0) {
+    double luminence = std::max(0.2, -dir);
+    HSL color = HSL(0.8, 0, luminence);
     Triangle::draw(
       p0screen.tov2(),
       p1screen.tov2(),
@@ -86,7 +84,9 @@ int main(int argc, char *argv[]) {
   if (init() != 0)
     return 1;
 
-  double theta = 0.001;
+  double theta = 0.01;
+
+  Mesh mesh = Mesh("/home/aidan/Projects/3dshooter/objects/teapot.obj", HSL(0, 0, 1));
 
   SDL_Event event;
   while (true) {
@@ -96,9 +96,15 @@ int main(int argc, char *argv[]) {
       }
     }
 
+    v3 pos = v3(0, 0, -5);
+    Matrix project = createProjectionMatrix();
+    Matrix rot = createYRotMatrix(theta);
+    Matrix translation = createTranslationMatrix(pos);
+    Matrix transformation = project * translation * rot;
+
     clear(0x222222);
 
-    drawCube(theta);
+    mesh.draw(transformation);
 
     render();
 
