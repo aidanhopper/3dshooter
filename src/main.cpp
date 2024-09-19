@@ -96,7 +96,7 @@ int main(int argc, char *argv[]) {
       }
     }
 
-    v3 pos = v3(0, 0, -5);
+    v3 pos = v3(0, -2, -5);
     Matrix project = createProjectionMatrix();
     Matrix rot = createYRotMatrix(theta);
     Matrix translation = createTranslationMatrix(pos);

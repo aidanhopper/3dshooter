@@ -9,6 +9,7 @@
 #include <string>
 #include <fstream>
 #include <array>
+#include <algorithm>
 
 class Mesh {
 private:
