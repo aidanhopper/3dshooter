@@ -1,6 +1,7 @@
 #include "hsl.h"
 
 HSL::HSL(int color) {
+  // need to convert this to HSL form
   std::cout << color << std::endl;
 }
 
