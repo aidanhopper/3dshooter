@@ -86,7 +86,7 @@ int main(int argc, char *argv[]) {
 
   double theta = 0.01;
 
-  Mesh mesh = Mesh("/home/aidan/Projects/3dshooter/objects/teapot.obj", HSL(0, 0, 1));
+  Mesh mesh = Mesh("./objects/teapot.obj", HSL(0, 0, 1));
 
   SDL_Event event;
   while (true) {
