@@ -1,4 +1,5 @@
 ---
-BasedOnStyle: Google
+BasedOnStyle: Microsoft
 ColumnLimit: 79
+IndentWidth: 2
 ...

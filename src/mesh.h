@@ -22,8 +22,9 @@
  * @brief Class that represents object meshes that can be drawn on screen.
  *
  */
-class Mesh {
- private:
+class Mesh
+{
+private:
   /**
    * @brief Vector of v3's that represents a point in model space.
    */
@@ -37,7 +38,7 @@ class Mesh {
   HSL color;
   std::vector<std::string> split(std::string str, std::string del);
 
- public:
+public:
   Mesh(const char *path, HSL color);
   void draw(Matrix transform);
 };
