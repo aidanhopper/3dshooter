@@ -1,3 +1,6 @@
 .direnv
 result
 .envrc
+html
+latex
+Doxyfile.bak

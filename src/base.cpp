@@ -5,6 +5,9 @@ SDL_Surface *surface = NULL;
 SDL_Renderer *renderer = NULL;
 SDL_Texture *texture = NULL;
 
+/**
+ * @brief Cleans up SDL2 before exit.
+ */
 void cleanup() {
   SDL_DestroyTexture(texture);
   SDL_DestroyRenderer(renderer);
@@ -13,6 +16,12 @@ void cleanup() {
   SDL_Quit();
 }
 
+
+/**
+ * @brief Initializes SDL2 window.
+ *
+ * @return Success.
+ */
 int init() {
 
   if (SDL_Init(SDL_INIT_VIDEO) < 0)
@@ -36,6 +45,13 @@ int init() {
   return 0;
 }
 
+/**
+ * @brief Sets a pixel in the pixel buffer to a hex color value on the screen.
+ *
+ * @param x
+ * @param y 
+ * @param color 
+ */
 void pixel(int x, int y, int color) {
   if (x >= WINDOW_WIDTH || y >= WINDOW_HEIGHT || x < 0 || y < 0)
     return;
@@ -43,10 +59,18 @@ void pixel(int x, int y, int color) {
   pixels[y * surface->w + x] = color;
 }
 
+/**
+ * @brief Clears the canvas and sets it to a color.
+ *
+ * @param color 
+ */
 void clear(int color) { 
   SDL_FillRect(surface, NULL, color);
 }
 
+/**
+ * @brief Takes the pixel buffer and renders it.
+ */
 void render() {
   texture = SDL_CreateTextureFromSurface(renderer, surface);
   SDL_RenderCopy(renderer, texture, NULL, NULL);
@@ -54,7 +78,15 @@ void render() {
   SDL_DestroyTexture(texture);
 }
 
-// primitive line drawing algorithm
+/**
+ * @brief Draws a line from x0,y0 to x1,y1 using a line drawing algorithm.
+ *
+ * @param x0
+ * @param y0 
+ * @param x1 
+ * @param y1 
+ * @param color 
+ */
 void pline(int x0, int y0, int x1, int y1, int color) {
 
   double dx = std::abs(x1 - x0);

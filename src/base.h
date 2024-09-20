@@ -1,3 +1,8 @@
+/**
+ * @file
+ * @brief Provides functions for basic interactions with SDL2.
+ */
+
 #pragma once
 
 #include <SDL2/SDL.h>

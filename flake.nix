@@ -33,23 +33,39 @@
           };
       });
 
+      packages.x86_64-linux.doxygen =
+        with import nixpkgs { system = "x86_64-linux"; };
+        stdenv.mkDerivation {
+          name = "document";
+          src = ./.;
+          buildInputs = with pkgs; [ doxygen ];
+          buildPhase = ''
+            doxygen
+          '';
+          installPhase = ''
+            mkdir -p $out/html
+            cp -r html/* $out/html/
+          '';
+        };
+                
+
       packages.x86_64-linux.default =
         with import nixpkgs { system = "x86_64-linux"; };
         stdenv.mkDerivation {
           name = "shooter";
-          src = ./.;
+          src = ./src;
           buildInputs = with pkgs; [ SDL2 ];
           buildPhase = ''
             g++ -o shooter \
-                ./src/main.cpp \
-                ./src/base.cpp \
-                ./src/triangle.cpp \
-                ./src/matrix.cpp \
-                ./src/v2.cpp \
-                ./src/v3.cpp \
-                ./src/v4.cpp \
-                ./src/hsl.cpp \
-                ./src/mesh.cpp \
+                main.cpp \
+                base.cpp \
+                triangle.cpp \
+                matrix.cpp \
+                v2.cpp \
+                v3.cpp \
+                v4.cpp \
+                hsl.cpp \
+                mesh.cpp \
                 `sdl2-config --cflags --libs`
           '';
           installPhase = ''

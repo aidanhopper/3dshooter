@@ -1,51 +1,40 @@
+/**
+ * @file
+ * @brief Entry point of the program.
+ */
+
 #include "base.h"
-#include "triangle.h"
+#include "hsl.h"
 #include "matrix.h"
+#include "mesh.h"
+#include "triangle.h"
 #include "v3.h"
 #include "v4.h"
-#include "hsl.h"
-#include "mesh.h"
 
+// values for the projection matrix
 const double PI = 3.14159;
-
-const double aspectRatio = (double) WINDOW_WIDTH/WINDOW_HEIGHT;
-const double fov = 90; // in degrees
+const double aspectRatio = (double)WINDOW_WIDTH / WINDOW_HEIGHT;
+const double fov = 90;  // in degrees
 const double near = 1;
 const double far = 100;
 
 Matrix createProjectionMatrix() {
-  float scale = 1 / std::tan(fov * 0.5 * PI/180);
-  return Matrix(
-    (1/aspectRatio)*scale, 0, 0, 0,
-    0, scale, 0, 0,
-    0, 0, -(far+near)/(far-near), -2*far*near/(far-near),
-    0, 0, -1, 0
-  );
+  float scale = 1 / std::tan(fov * 0.5 * PI / 180);
+  return Matrix((1 / aspectRatio) * scale, 0, 0, 0, 0, scale, 0, 0, 0, 0,
+                -(far + near) / (far - near), -2 * far * near / (far - near),
+                0, 0, -1, 0);
 }
 
-// Matrix createXRotMatrix(double theta) {
-// }
-
-Matrix createYRotMatrix(double theta) { 
-  return Matrix(
-    std::cos(theta), 0, std::sin(theta), 0,
-    0, 1, 0, 0,
-    -std::sin(theta), 0, std::cos(theta), 0,
-    0, 0, 0, 1
-  );
+Matrix createYRotMatrix(double theta) {
+  return Matrix(std::cos(theta), 0, std::sin(theta), 0, 0, 1, 0, 0,
+                -std::sin(theta), 0, std::cos(theta), 0, 0, 0, 0, 1);
 }
 
 Matrix createTranslationMatrix(v3 v) {
-  return Matrix(
-    1, 0, 0, v.x,
-    0, 1, 0, v.y,
-    0, 0, 1, v.z,
-    0, 0, 0, 1
-  );
+  return Matrix(1, 0, 0, v.x, 0, 1, 0, v.y, 0, 0, 1, v.z, 0, 0, 0, 1);
 }
 
 void drawRotatingTriangle(double theta) {
-
   v3 p0 = v3(0, 0, 0);
   v3 p1 = v3(1, 0, 0);
   v3 p2 = v3(0, 1, 0);
@@ -70,21 +59,15 @@ void drawRotatingTriangle(double theta) {
   if (dir <= 0) {
     double luminence = std::max(0.2, -dir);
     HSL color = HSL(0.8, 0, luminence);
-    Triangle::draw(
-      p0screen.tov2(),
-      p1screen.tov2(),
-      p2screen.tov2(),
-      color.toHex()
-    );
+    Triangle::draw(p0screen.tov2(), p1screen.tov2(), p2screen.tov2(),
+                   color.toHex());
   }
-
 }
 
 int main(int argc, char *argv[]) {
-  if (init() != 0)
-    return 1;
+  if (init() != 0) return 1;
 
-  double theta = 0.01;
+  double theta = 0.0;
 
   Mesh mesh = Mesh("./objects/teapot.obj", HSL(0, 0, 1));
 
@@ -109,9 +92,7 @@ int main(int argc, char *argv[]) {
     render();
 
     theta += 0.001;
-
   }
 
   cleanup();
 }
-
