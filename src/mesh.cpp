@@ -80,17 +80,19 @@ void Mesh::draw(Matrix transform)
     v3 p2 = this->vertices[face[2]];
 
     // transform points
-    v3 p0screen = (transform * p0.tov4()).perspectiveDivide();
-    v3 p1screen = (transform * p1.tov4()).perspectiveDivide();
-    v3 p2screen = (transform * p2.tov4()).perspectiveDivide();
+    v4 p0t = (transform * p0.tov4());
+    v4 p1t = (transform * p1.tov4());
+    v4 p2t = (transform * p2.tov4());
 
-    // check if the angle between
-    v3 normal = (p1screen - p0screen).cross(p2screen - p0screen);
-    double dir = normal.norm().dot(v3(0, 0, -1));
+    v3 normal = (p1t.perspectiveDivide() - p0t.perspectiveDivide())
+                    .cross(p2t.perspectiveDivide() - p0t.perspectiveDivide()).norm();
+    double dir = normal.dot(v3(0, 0, -1));
 
+    // push points to vector that are in view for sorting later
     if (dir < 0)
     {
-      draworder.push_back({p0, p1, p2});
+      draworder.push_back({p0t.perspectiveDivide(), p1t.perspectiveDivide(),
+                           p2t.perspectiveDivide()});
     }
   }
 
@@ -101,20 +103,17 @@ void Mesh::draw(Matrix transform)
                   (points1[0].z + points1[1].z + points1[2].z) / 3;
               double average2 =
                   (points2[0].z + points2[1].z + points2[2].z) / 3;
-              return (average1 < average2);
+              return (average1 > average2);
             });
 
   // draw the triangles in the draw order
   for (auto point : draworder)
   {
     HSL col = this->color;
-    v3 normal = (point[1] - point[0]).cross(point[2] - point[0]);
-    double dir = normal.norm().dot(v3(0, 0, -1));
-    std::cout << dir << std::endl;
+    v3 normal = (point[1] - point[0]).cross(point[2] - point[0]).norm();
+    double dir = normal.dot(v3(0, 0, -1));
     col.luminence = -dir;
-    Triangle::draw((transform * point[0].tov4()).perspectiveDivide().tov2(),
-                   (transform * point[1].tov4()).perspectiveDivide().tov2(),
-                   (transform * point[2].tov4()).perspectiveDivide().tov2(),
+    Triangle::draw(point[0].tov2(), point[1].tov2(), point[2].tov2(),
                    col.toHex());
   }
 }

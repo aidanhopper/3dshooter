@@ -112,10 +112,10 @@ int main(int argc, char *argv[])
     clear(0x222222);
 
     mesh.draw(transformation);
-    
+
     render();
 
-    theta += 0.001;
+    theta += 0.01;
   }
 
   cleanup();
