@@ -87,11 +87,17 @@ void Mesh::draw(Matrix transform)
     v4 p2t = (transform * p2.tov4());
 
     v3 normal = (p1t.perspectiveDivide() - p0t.perspectiveDivide())
-                    .cross(p2t.perspectiveDivide() - p0t.perspectiveDivide()).norm();
+                    .cross(p2t.perspectiveDivide() - p0t.perspectiveDivide())
+                    .norm();
+
     double dir = normal.dot(v3(0, 0, -1));
 
     // push points to vector that are in view for sorting later
-    if (dir < 0)
+    if (dir < 0 && std::abs(p0t.x) < p0t.w && std::abs(p0t.y) < p0t.w &&
+        std::abs(p0t.z) < p0t.w && std::abs(p1t.x) < p1t.w &&
+        std::abs(p1t.y) < p1t.w && std::abs(p1t.z) < p1t.w &&
+        std::abs(p2t.x) < p2t.w && std::abs(p2t.y) < p2t.w &&
+        std::abs(p2t.z) < p2t.w)
     {
       draworder.push_back({p0t.perspectiveDivide(), p1t.perspectiveDivide(),
                            p2t.perspectiveDivide()});
@@ -114,7 +120,7 @@ void Mesh::draw(Matrix transform)
     HSL col = this->color;
     v3 normal = (point[1] - point[0]).cross(point[2] - point[0]).norm();
     double dir = normal.dot(v3(0, 0, -1));
-    col.luminence = -dir;
+    col.luminence = -dir * 0.95;
     Triangle::draw(point[0].tov2(), point[1].tov2(), point[2].tov2(),
                    col.toHex());
   }

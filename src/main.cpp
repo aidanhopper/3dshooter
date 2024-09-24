@@ -18,6 +18,9 @@ const double fov = 90; // in degrees
 const double near = 1;
 const double far = 100;
 
+// target FPS
+const int FPS = 144;
+
 Matrix createProjectionMatrix()
 {
   float scale = 1 / std::tan(fov * 0.5 * PI / 180);
@@ -91,13 +94,19 @@ int main(int argc, char *argv[])
 
   double theta = 0.0;
 
-  Mesh mesh = Mesh("./objects/teapot.obj", HSL(0, 0, 1));
+  Mesh mesh = Mesh("./objects/mountains.obj", HSL(0, 0, 1));
+
+  // for hitting target FPS
+  Uint32 frameStart;
+  int frameTime;
 
   SDL_Event event;
 
   // game loop
   while (true)
   {
+    frameStart = SDL_GetTicks();
+
     // event loop
     while (SDL_PollEvent(&event))
     {
@@ -107,7 +116,7 @@ int main(int argc, char *argv[])
       }
     }
 
-    v3 pos = v3(0, -2, -5);
+    v3 pos = v3(0, -20, -30);
     Matrix project = createProjectionMatrix();
     Matrix rot = createYRotMatrix(theta);
     Matrix translation = createTranslationMatrix(pos);
@@ -119,11 +128,19 @@ int main(int argc, char *argv[])
 
     mesh.draw(transformation);
 
-    // end drawing 
+    // end drawing
 
     render();
 
+    // increment the angle
     theta += 0.01;
+
+    // FPS calculations
+    frameTime = SDL_GetTicks() - frameStart;
+    if ((1000 / FPS) > frameTime)
+    {
+      SDL_Delay((1000 / FPS) - frameTime);
+    }
   }
 
   cleanup();
