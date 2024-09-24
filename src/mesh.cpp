@@ -66,6 +66,8 @@ std::vector<std::string> Mesh::split(std::string str, std::string del)
  *
  * @param transform The transformation that is applied to the points in the
  * mesh.
+ *
+ * TODO implement Cohen-Sutherland line clipping
  */
 void Mesh::draw(Matrix transform)
 {
@@ -96,7 +98,7 @@ void Mesh::draw(Matrix transform)
     }
   }
 
-  // use painters algorithm for drawing points
+  // sort points by depth from back to front (painters algorithm)
   std::sort(draworder.begin(), draworder.end(),
             [](std::array<v3, 3> points1, std::array<v3, 3> points2) {
               double average1 =

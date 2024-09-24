@@ -83,6 +83,7 @@ void drawRotatingTriangle(double theta)
 
 int main(int argc, char *argv[])
 {
+  // exit if init fails
   if (init() != 0)
   {
     return 1;
@@ -93,8 +94,11 @@ int main(int argc, char *argv[])
   Mesh mesh = Mesh("./objects/teapot.obj", HSL(0, 0, 1));
 
   SDL_Event event;
+
+  // game loop
   while (true)
   {
+    // event loop
     while (SDL_PollEvent(&event))
     {
       if (event.type == SDL_QUIT)
@@ -111,7 +115,11 @@ int main(int argc, char *argv[])
 
     clear(0x222222);
 
+    // draw here
+
     mesh.draw(transformation);
+
+    // end drawing 
 
     render();
 
