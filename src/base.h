@@ -11,6 +11,7 @@
 #include "v3.h"
 #include "v4.h"
 #include <SDL2/SDL.h>
+#include <cassert>
 #include <iostream>
 #include <stdexcept>
 #include <vector>

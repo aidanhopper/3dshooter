@@ -102,8 +102,7 @@ void Mesh::clip(std::vector<std::array<v3, 3>> &v)
  *
  * @param v The vector to populate.
  */
-void Mesh::populateDrawVector(std::vector<std::array<v3, 3>> &v, v3 pos,
-                              v3 rot)
+void Mesh::populateDrawOrder(std::vector<std::array<v3, 3>> &v, v3 pos, v3 rot)
 {
   // create matrices
   Matrix project = createProjectionMatrix();
@@ -119,27 +118,25 @@ void Mesh::populateDrawVector(std::vector<std::array<v3, 3>> &v, v3 pos,
     v3 p1model = this->vertices[face[1]];
     v3 p2model = this->vertices[face[2]];
 
-    // project points into view space for clipping
-    v3 p0view = (view * translate * yrot * p0model.tov4()).tov3();
-    v3 p1view = (view * translate * yrot * p1model.tov4()).tov3();
-    v3 p2view = (view * translate * yrot * p2model.tov4()).tov3();
-
-    // project points to check if the triangle is facing the camera
-    v3 a = (project * p0view.tov4()).perspectiveDivide();
-    v3 b = (project * p1view.tov4()).perspectiveDivide();
-    v3 c = (project * p2view.tov4()).perspectiveDivide();
-
-    v3 ab = b - a;
-    v3 ac = c - a;
+    // project points into clip space
+    v4 a = project * view * translate * yrot * p0model.tov4();
+    v4 b = project * view * translate * yrot * p1model.tov4();
+    v4 c = project * view * translate * yrot * p2model.tov4();
 
     // check if triangle is facing the camera
-    bool triIsFacingCamera = ab.x * ac.y - ac.x * ab.y < 0 ? false : true;
+    v3 ab = b.perspectiveDivide() - a.perspectiveDivide();
+    v3 ac = c.perspectiveDivide() - a.perspectiveDivide();
+    bool triIsFacingCamera = ab.x * ac.y - ac.x * ab.y >= 0;
 
-    // add points to the draworder when they are facing the camera and do crude
+    // add points to the draworder when they are facing the camera
     // (not sorted yet)
     if (triIsFacingCamera)
     {
-      v.push_back({a, b, c});
+      // points a b & c are now in clip space and facing the camera
+      // boundaries are -w <= x, y, z <= w
+
+      v.push_back({a.perspectiveDivide(), b.perspectiveDivide(),
+                   c.perspectiveDivide()});
     }
   }
 
@@ -155,27 +152,24 @@ void Mesh::populateDrawVector(std::vector<std::array<v3, 3>> &v, v3 pos,
 }
 
 /**
- * @brief Draws the mesh.
+ * @brief Draws the mesh on the screen.
  *
- * @param transform The transformation that is applied to the points in the
- * mesh.
- *
- * TODO implement the view matrix
- * TODO implement Cohen-Sutherland line clipping
+ * @param pos
+ * @param rot
  */
 void Mesh::draw(v3 pos, v3 rot)
 {
 
   std::vector<std::array<v3, 3>> draworder;
 
-  this->populateDrawVector(draworder, pos, rot);
+  this->populateDrawOrder(draworder, pos, rot);
 
   // draw the triangles in the draw order
   for (auto point : draworder)
   {
     // get dir to determine the strength of the light source
     v3 normal = (point[1] - point[0]).cross(point[2] - point[0]).norm();
-    double dir = normal.dot(v3(0, 0, -1));
+    double dir = normal.dot(v3(0, 0, -1).norm());
 
     // project points to screen and convert to v2
     v2 p0p = point[0].tov2();

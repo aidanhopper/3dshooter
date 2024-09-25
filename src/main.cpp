@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
 
   double theta = 0.0;
 
-  Mesh mesh = Mesh("./objects/teapot.obj", HSL(0, 0, 1));
+  Mesh mesh = Mesh("./objects/axis.obj", HSL(0, 0, 1));
 
   // for hitting target FPS
   Uint32 frameStart;
