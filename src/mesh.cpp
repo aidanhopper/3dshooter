@@ -1,6 +1,28 @@
 /**
  * @file
  * @brief Contains the definitions of methods in the Mesh class.
+ *
+ * Eventually this class will need to be restructured to account for
+ * objects such as camera (has not been created yet) and to make a more
+ * robust system for apply transformations.
+ *
+ * A different transformation system would go like this.
+ *
+ * 1. Apply matrix to transform the model.
+ * ... do stuff
+ * 2. Apply matrix to transform from model space to world space.
+ * ... do stuff to the points
+ * 3. Apply matrix to transform from world space to view space.
+ * ... do stuff to the points
+ * 4. Apply matrix to transform from view space to screen space.
+ * ... do stuff
+ * draw
+ *
+ * This way the function signature would look like this.
+ * draw(Matrix modelT, Matrix worldT, Matrix viewT, Matrix screenT, ...)
+ *
+ * This will give the ability to control the transfomrations that occur at
+ * different stages of the projection pipeline.
  */
 
 #include "mesh.h"
@@ -62,50 +84,67 @@ std::vector<std::string> Mesh::split(std::string str, std::string del)
 }
 
 /**
- * @brief Draws the mesh.
+ * @brief Takes a vector points that are facing the camera and
+ * removes them when they are outside the view frustum.
  *
- * @param transform The transformation that is applied to the points in the
- * mesh.
- *
- * TODO implement Cohen-Sutherland line clipping
+ * @param v The vector containing the points in view space.
  */
-void Mesh::draw(Matrix transform)
+void Mesh::clip(std::vector<std::array<v3, 3>> &v)
 {
-  std::vector<std::array<v3, 3>> draworder;
+}
+
+/**
+ * @brief Populates the draw vector with triangles that should be drawn in draw
+ * order.
+ *
+ * Vertices should be projected and divided by perspective before being added
+ * to the draw vector.
+ *
+ * @param v The vector to populate.
+ */
+void Mesh::populateDrawVector(std::vector<std::array<v3, 3>> &v, v3 pos,
+                              v3 rot)
+{
+  // create matrices
+  Matrix project = createProjectionMatrix();
+  Matrix translate = createTranslationMatrix(pos);
+  Matrix yrot = createYRotMatrix(rot.y);
+  Matrix view = createViewMatrix(v3(0, 0, 0), v3(0, 0, -1), v3(0, 1, 0));
 
   // populates draworder with triangles that need to be drawn
   for (auto face : this->faces)
   {
     // grab points
-    v3 p0 = this->vertices[face[0]];
-    v3 p1 = this->vertices[face[1]];
-    v3 p2 = this->vertices[face[2]];
+    v3 p0model = this->vertices[face[0]];
+    v3 p1model = this->vertices[face[1]];
+    v3 p2model = this->vertices[face[2]];
 
-    // transform points
-    v4 p0t = (transform * p0.tov4());
-    v4 p1t = (transform * p1.tov4());
-    v4 p2t = (transform * p2.tov4());
+    // project points into view space for clipping
+    v3 p0view = (view * translate * yrot * p0model.tov4()).tov3();
+    v3 p1view = (view * translate * yrot * p1model.tov4()).tov3();
+    v3 p2view = (view * translate * yrot * p2model.tov4()).tov3();
 
-    v3 normal = (p1t.perspectiveDivide() - p0t.perspectiveDivide())
-                    .cross(p2t.perspectiveDivide() - p0t.perspectiveDivide())
-                    .norm();
+    // project points to check if the triangle is facing the camera
+    v3 a = (project * p0view.tov4()).perspectiveDivide();
+    v3 b = (project * p1view.tov4()).perspectiveDivide();
+    v3 c = (project * p2view.tov4()).perspectiveDivide();
 
-    double dir = normal.dot(v3(0, 0, -1));
+    v3 ab = b - a;
+    v3 ac = c - a;
 
-    // push points to vector that are in view for sorting later
-    if (dir < 0 && std::abs(p0t.x) < p0t.w && std::abs(p0t.y) < p0t.w &&
-        std::abs(p0t.z) < p0t.w && std::abs(p1t.x) < p1t.w &&
-        std::abs(p1t.y) < p1t.w && std::abs(p1t.z) < p1t.w &&
-        std::abs(p2t.x) < p2t.w && std::abs(p2t.y) < p2t.w &&
-        std::abs(p2t.z) < p2t.w)
+    // check if triangle is facing the camera
+    bool triIsFacingCamera = ab.x * ac.y - ac.x * ab.y < 0 ? false : true;
+
+    // add points to the draworder when they are facing the camera and do crude
+    // (not sorted yet)
+    if (triIsFacingCamera)
     {
-      draworder.push_back({p0t.perspectiveDivide(), p1t.perspectiveDivide(),
-                           p2t.perspectiveDivide()});
+      v.push_back({a, b, c});
     }
   }
 
   // sort points by depth from back to front (painters algorithm)
-  std::sort(draworder.begin(), draworder.end(),
+  std::sort(v.begin(), v.end(),
             [](std::array<v3, 3> points1, std::array<v3, 3> points2) {
               double average1 =
                   (points1[0].z + points1[1].z + points1[2].z) / 3;
@@ -113,15 +152,38 @@ void Mesh::draw(Matrix transform)
                   (points2[0].z + points2[1].z + points2[2].z) / 3;
               return (average1 > average2);
             });
+}
+
+/**
+ * @brief Draws the mesh.
+ *
+ * @param transform The transformation that is applied to the points in the
+ * mesh.
+ *
+ * TODO implement the view matrix
+ * TODO implement Cohen-Sutherland line clipping
+ */
+void Mesh::draw(v3 pos, v3 rot)
+{
+
+  std::vector<std::array<v3, 3>> draworder;
+
+  this->populateDrawVector(draworder, pos, rot);
 
   // draw the triangles in the draw order
   for (auto point : draworder)
   {
-    HSL col = this->color;
+    // get dir to determine the strength of the light source
     v3 normal = (point[1] - point[0]).cross(point[2] - point[0]).norm();
     double dir = normal.dot(v3(0, 0, -1));
-    col.luminence = -dir * 0.95;
-    Triangle::draw(point[0].tov2(), point[1].tov2(), point[2].tov2(),
-                   col.toHex());
+
+    // project points to screen and convert to v2
+    v2 p0p = point[0].tov2();
+    v2 p1p = point[1].tov2();
+    v2 p2p = point[2].tov2();
+
+    // draw the triangle on screen
+    Triangle::draw(p0p, p1p, p2p,
+                   this->color.modifyLuminence(-dir * 0.95).toHex());
   }
 }

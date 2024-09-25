@@ -4,85 +4,6 @@
  */
 
 #include "base.h"
-#include "hsl.h"
-#include "matrix.h"
-#include "mesh.h"
-#include "triangle.h"
-#include "v3.h"
-#include "v4.h"
-
-// values for the projection matrix
-const double PI = 3.14159;
-const double aspectRatio = (double)WINDOW_WIDTH / WINDOW_HEIGHT;
-const double fov = 90; // in degrees
-const double near = 1;
-const double far = 100;
-
-// target FPS
-const int FPS = 144;
-
-Matrix createProjectionMatrix()
-{
-  float scale = 1 / std::tan(fov * 0.5 * PI / 180);
-  return Matrix( // clang-format off
-    (1 / aspectRatio) * scale, 0, 0, 0, 
-    0, scale, 0, 0, 
-    0, 0, -(far + near) / (far - near), -2 * far * near / (far - near),
-    0, 0, -1, 0
-  ); // clang-format on
-}
-
-Matrix createYRotMatrix(double theta)
-{
-  return Matrix( // clang-format off
-    std::cos(theta), 0, std::sin(theta), 0, 
-    0, 1, 0, 0,
-    -std::sin(theta), 0, std::cos(theta), 0, 
-    0, 0, 0, 1
-  ); // clang-format on
-}
-
-Matrix createTranslationMatrix(v3 v)
-{
-  return Matrix( // clang-format off
-    1, 0, 0, v.x,
-    0, 1, 0, v.y, 
-    0, 0, 1, v.z, 
-    0, 0, 0, 1
-  ); // clang-format on
-}
-
-void drawRotatingTriangle(double theta)
-{
-  v3 p0 = v3(0, 0, 0);
-  v3 p1 = v3(1, 0, 0);
-  v3 p2 = v3(0, 1, 0);
-
-  v3 pos = v3(0.5, 0.5, -5);
-  Matrix project = createProjectionMatrix();
-  Matrix rot = createYRotMatrix(theta);
-  Matrix translation = createTranslationMatrix(pos);
-
-  v4 p0cam = translation * rot * p0.tov4();
-  v4 p1cam = translation * rot * p1.tov4();
-  v4 p2cam = translation * rot * p2.tov4();
-
-  v3 p0screen = (project * p0cam).perspectiveDivide();
-  v3 p1screen = (project * p1cam).perspectiveDivide();
-  v3 p2screen = (project * p2cam).perspectiveDivide();
-
-  v3 normal = (p1screen - p0screen).cross(p2screen - p0screen);
-
-  double dir = normal.dot(v3(0, 0, -1));
-
-  if (dir <= 0)
-  {
-    double luminence = std::max(0.2, -dir);
-    HSL color = HSL(0.8, 0, luminence);
-    Triangle::draw(p0screen.tov2(), p1screen.tov2(), p2screen.tov2(),
-                   color.toHex());
-  }
-}
 
 int main(int argc, char *argv[])
 {
@@ -94,7 +15,7 @@ int main(int argc, char *argv[])
 
   double theta = 0.0;
 
-  Mesh mesh = Mesh("./objects/mountains.obj", HSL(0, 0, 1));
+  Mesh mesh = Mesh("./objects/teapot.obj", HSL(0, 0, 1));
 
   // for hitting target FPS
   Uint32 frameStart;
@@ -116,7 +37,7 @@ int main(int argc, char *argv[])
       }
     }
 
-    v3 pos = v3(0, -20, -30);
+    v3 pos = v3(0, -2, -20);
     Matrix project = createProjectionMatrix();
     Matrix rot = createYRotMatrix(theta);
     Matrix translation = createTranslationMatrix(pos);
@@ -126,7 +47,7 @@ int main(int argc, char *argv[])
 
     // draw here
 
-    mesh.draw(transformation);
+    mesh.draw(pos, v3(0, theta, 0));
 
     // end drawing
 

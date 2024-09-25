@@ -37,8 +37,10 @@ private:
 
   HSL color;
   std::vector<std::string> split(std::string str, std::string del);
+  void populateDrawVector(std::vector<std::array<v3, 3>> &v, v3 pos, v3 rot);
+  void clip(std::vector<std::array<v3, 3>> &v);
 
 public:
   Mesh(const char *path, HSL color);
-  void draw(Matrix transform);
+  void draw(v3 pos, v3 rot);
 };
