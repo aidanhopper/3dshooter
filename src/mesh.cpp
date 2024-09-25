@@ -102,13 +102,14 @@ void Mesh::clip(std::vector<std::array<v3, 3>> &v)
  *
  * @param v The vector to populate.
  */
-void Mesh::populateDrawOrder(std::vector<std::array<v3, 3>> &v, v3 pos, v3 rot)
+void Mesh::populateDrawOrder(std::vector<std::array<v3, 3>> &v, v3 pos, v3 rot,
+                             v3 eye)
 {
   // create matrices
   Matrix project = createProjectionMatrix();
   Matrix translate = createTranslationMatrix(pos);
   Matrix yrot = createYRotMatrix(rot.y);
-  Matrix view = createViewMatrix(v3(0, 0, 0), v3(0, 0, -1), v3(0, 1, 0));
+  Matrix view = createViewMatrix(eye, v3(0, 0, -1), v3(0, 1, 0));
 
   // populates draworder with triangles that need to be drawn
   for (auto face : this->faces)
@@ -119,9 +120,9 @@ void Mesh::populateDrawOrder(std::vector<std::array<v3, 3>> &v, v3 pos, v3 rot)
     v3 p2model = this->vertices[face[2]];
 
     // project points into clip space
-    v4 a = project * view * translate * yrot * p0model.tov4();
-    v4 b = project * view * translate * yrot * p1model.tov4();
-    v4 c = project * view * translate * yrot * p2model.tov4();
+    v4 a = project * view * translate * p0model.tov4();
+    v4 b = project * view * translate * p1model.tov4();
+    v4 c = project * view * translate * p2model.tov4();
 
     // check if triangle is facing the camera
     v3 ab = b.perspectiveDivide() - a.perspectiveDivide();
@@ -135,8 +136,14 @@ void Mesh::populateDrawOrder(std::vector<std::array<v3, 3>> &v, v3 pos, v3 rot)
       // points a b & c are now in clip space and facing the camera
       // boundaries are -w <= x, y, z <= w
 
-      v.push_back({a.perspectiveDivide(), b.perspectiveDivide(),
-                   c.perspectiveDivide()});
+      if (std::abs(a.x) < a.w && std::abs(a.y) < a.w && std::abs(a.z) < a.w &&
+          std::abs(b.x) < b.w && std::abs(b.y) < b.w && std::abs(b.z) < b.w &&
+          std::abs(c.x) < c.w && std::abs(c.y) < c.w && std::abs(c.z) < c.w)
+      {
+
+        v.push_back({a.perspectiveDivide(), b.perspectiveDivide(),
+                     c.perspectiveDivide()});
+      }
     }
   }
 
@@ -157,12 +164,12 @@ void Mesh::populateDrawOrder(std::vector<std::array<v3, 3>> &v, v3 pos, v3 rot)
  * @param pos
  * @param rot
  */
-void Mesh::draw(v3 pos, v3 rot)
+void Mesh::draw(v3 pos, v3 rot, v3 eye)
 {
 
   std::vector<std::array<v3, 3>> draworder;
 
-  this->populateDrawOrder(draworder, pos, rot);
+  this->populateDrawOrder(draworder, pos, rot, eye);
 
   // draw the triangles in the draw order
   for (auto point : draworder)

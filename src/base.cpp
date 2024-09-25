@@ -349,9 +349,9 @@ Matrix createViewMatrix(v3 eye, v3 target, v3 up)
   v3 forward = (eye - target).norm();
   v3 right = up.cross(forward).norm();
   return Matrix( // clang-format off
-    right.x, up.x, forward.x, 0,
-    right.y, up.y, forward.y, 0,
-    right.z, up.z, forward.z, 0,
-    -right.dot(eye), -up.dot(eye), -forward.dot(eye), 1
+    right.x, right.y, right.z, -eye.x,
+    up.x, up.y, up.z, -eye.y,
+    forward.x, forward.y, forward.z, -eye.z,
+    0, 0, 0, 1
   ); // clang-format on
 }

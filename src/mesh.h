@@ -37,10 +37,10 @@ private:
 
   HSL color;
   std::vector<std::string> split(std::string str, std::string del);
-  void populateDrawOrder(std::vector<std::array<v3, 3>> &v, v3 pos, v3 rot);
+  void populateDrawOrder(std::vector<std::array<v3, 3>> &v, v3 pos, v3 rot, v3 eye);
   void clip(std::vector<std::array<v3, 3>> &v);
 
 public:
   Mesh(const char *path, HSL color);
-  void draw(v3 pos, v3 rot);
+  void draw(v3 pos, v3 rot, v3 eye);
 };
